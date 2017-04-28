@@ -46,7 +46,7 @@ namespace ModelHandler {
 
             LinAlg::Matrix<Type> fuzzyfication( LinAlg::Matrix<Type> Input);
 
-            LinAlg::Matrix<Type> rulesExecute();
+            LinAlg::Matrix<Type> rulesExecute(LinAlg::Matrix<Type> Output);
 
             void defuzzyfication();
 

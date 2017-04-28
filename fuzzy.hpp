@@ -41,6 +41,7 @@ LinAlg::Matrix<Type> ModelHandler::Fuzzy<Type>::fuzzyfication( LinAlg::Matrix<Ty
     unsigned n2 = this->getMaxNumberOfMembershipFunctions(this->InputMF);
     LinAlg::Matrix<Type> ret(n,n2);// Cada linha é uma entrada e cada coluna nessa linha é uma função de pertinência.
                                      // A matriz ret armazenará os valores fuzzificados nessa forma
+    //Ex and,Comida:doce,Bebida:Ruim,Saida:seMata
 
     std::map< std::string, std::map< std::string, advancedModelHandler::MembershipFunction<double>* > >::reverse_iterator iterInputs = this->InputMF.rbegin();
     for(unsigned i = 1; i <= n; ++i)
@@ -55,4 +56,74 @@ LinAlg::Matrix<Type> ModelHandler::Fuzzy<Type>::fuzzyfication( LinAlg::Matrix<Ty
         iterInputs++;
     }
     return ret;
+}
+
+template <typename Type>
+void ModelHandler::Fuzzy<Type>::addRules(std::string rule)
+{
+    int n = std::count(rules.begin(),rules.end(),',') + 1;
+    std::map<std::string, std::string> ret;
+
+    while(!(rule.empty()))
+    {
+        int partRulePosition = rule.find(",");
+        std::string partRule;
+        if(partRulePosition != -1)
+            partRule = rule.substr(0, partRulePosition);
+        else
+        {
+            partRule = rule;
+            partRulePosition = rule.length();
+        }
+
+        int colonPosition = partRule.find(":");
+        if(colonPosition != -1)
+        {
+            ret[partRule] = " ";
+        }
+        else
+        {
+            std::string InOut = partRule.substr(0, colonPosition);
+            std::string MF = InOut.erase(0, colonPosition + 1);
+            ret[InOut] = MF;
+        }
+        rule.erase(0, partRulePosition + 1);
+    }
+    this->rules.push_back(rule);
+    this->countMaxOutputMFRepetitionInRules();
+}
+
+template <typename Type>
+LinAlg::Matrix<Type> ModelHandler::Fuzzy<Type>::rulesExecute(LinAlg::Matrix<Type> Output)
+{
+    // Onde Paramos: como definir quem é saida e regra no indice de ret;
+    // verificar OR é min e AND é max?
+    // Permitir o uso de maxV e minV
+    unsigned sizeOfRules = this->rules.size();
+    unsigned numberOfOutputs = this->outputMF.size();
+    LinAlg::Matrix<Type> ret(numberOfOutputs, sizeOfRules);
+
+    std::map<std::string, std::string>::reverse_iterator iter = this->rules[i].rbegin();
+    if(iter->first == "and")
+    {
+        iter++;
+        for(unsigned i = 1; i < sizeOfRules; i += 2)
+        {
+            std::map<std::string, std::string>::reverse_iterator iter = this->rules[i].rbegin();
+//            for esse for é para iterar as entradas na regra
+            ret(saida,regra) = maxV(ret(saida,regra),this->InputMF[iter->first][iter->second].sim(Output));
+            iter++;
+        }
+    }
+    else if(iter->first == "or")
+    {
+        iter++;
+        for(unsigned i = 1; i < sizeOfRules; i += 2)
+        {
+            std::map<std::string, std::string>::reverse_iterator iter = this->rules[i].rbegin();
+            //            for esse for é para iterar as entradas na regra
+            ret(saida,regra) = minV(ret(saida,regra),this->InputMF[iter->first][iter->second].sim(Output));
+            iter++;
+        }
+    }
 }
