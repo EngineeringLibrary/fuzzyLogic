@@ -55,15 +55,23 @@ void MainWindow::on_pushButton_clicked()
 {
     ModelHandler::Fuzzy<double> F;
     F.addInputMF("Comida","salgada", new advancedModelHandler::triangular<double>(1,2,3));
-    F.addInputMF("Comida","doce", new advancedModelHandler::triangular<double>(1,2,3));
-    F.addInputMF("Comida","doce", new advancedModelHandler::triangular<double>(1,2,3));
-    std::map<std::string, advancedModelHandler::MembershipFunction<double>*> M = F.getInputMF("Comida");
-    for(std::map<std::string,advancedModelHandler::MembershipFunction<double>*>::iterator iter = M.begin(); iter != M.end(); ++iter)
-    {
-    std::string k = iter->first;
-//    advancedModelHandler::MembershipFunction y =  iter->second;
-    ui->textEdit->append(k.c_str());
-    }
+    F.addInputMF("Comida","doce", new advancedModelHandler::triangular<double>(3,4,5));
+    F.addInputMF("Comida","Azeda", new advancedModelHandler::triangular<double>(5,6,7));
+
+    F.addInputMF("Bebida","ruim", new advancedModelHandler::triangular<double>(1,2,3));
+    F.addInputMF("Bebida","boa", new advancedModelHandler::triangular<double>(3,4,5));
+    F.addInputMF("Bebida","+o-", new advancedModelHandler::triangular<double>(5,6,7));
+
+    std::string str; str << F.fuzzyfication("2;4");
+    ui->textEdit->append(str.c_str());
+//    F.addInputMF("Comida","doce", new advancedModelHandler::triangular<double>(1,2,3));
+//    std::map<std::string, advancedModelHandler::MembershipFunction<double>*> M = F.getInputMF("Comida");
+//    for(std::map<std::string,advancedModelHandler::MembershipFunction<double>*>::iterator iter = M.begin(); iter != M.end(); ++iter)
+//    {
+//    std::string k = iter->first;
+////    advancedModelHandler::MembershipFunction y =  iter->second;
+//    ui->textEdit->append(k.c_str());
+//    }
 
 
 

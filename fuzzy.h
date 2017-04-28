@@ -11,8 +11,8 @@ namespace ModelHandler {
     template <typename Type>
         class Fuzzy: public Model<Type>
         {
-            std::map< std::string, std::map< std::string, advancedModelHandler::MembershipFunction<Type>* > > InputMF;
-            std::map< std::string, std::map< std::string, advancedModelHandler::MembershipFunction<Type>* > > outputMF;
+            std::map< std::string, std::map< std::string, advancedModelHandler::MembershipFunction<double>* > > InputMF;
+            std::map< std::string, std::map< std::string, advancedModelHandler::MembershipFunction<double>* > > outputMF;
             LinAlg::Matrix<unsigned> rules;
             LinAlg::Matrix<Type> fuzzyficatedValue;
 
@@ -40,7 +40,9 @@ namespace ModelHandler {
 
             void removeRules();
 
-            void fuzzyfication();
+            LinAlg::Matrix<Type> fuzzyfication( LinAlg::Matrix<Type> Input);
+
+            unsigned getMaxNumberOfMembershipFunctions(std::map<std::__cxx11::string, std::map<std::__cxx11::string, advancedModelHandler::MembershipFunction<double> *> > &Input);
 
             void rulesExecute();
 

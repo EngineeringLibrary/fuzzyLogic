@@ -1,7 +1,7 @@
 #include "triangular.h"
 
 template <typename Type>
-advancedModelHandler::triangular<Type>::triangular(Type leftLimit, Type rigthLimit, Type peak)
+advancedModelHandler::triangular<Type>::triangular(Type leftLimit,Type peak, Type rigthLimit)
 {
     this->leftLimit = leftLimit;
     this->peak = peak;

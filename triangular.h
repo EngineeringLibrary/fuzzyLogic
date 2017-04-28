@@ -8,7 +8,7 @@ namespace advancedModelHandler {
     {
         Type leftLimit, rigthLimit, peak;
     public:
-        triangular(Type leftLimit, Type rigthLimit, Type peak);
+        triangular(Type leftLimit, Type peak, Type rigthLimit);
         Type         sim(Type x);
         LinAlg::Matrix<Type> sim(LinAlg::Matrix<Type> x);
     };
