@@ -59,11 +59,17 @@ void MainWindow::on_pushButton_clicked()
     F.addInputMF("Comida","Azeda", new advancedModelHandler::triangular<double>(5,6,7));
 
     F.addInputMF("Bebida","ruim", new advancedModelHandler::triangular<double>(1,2,3));
-    F.addInputMF("Bebida","boa", new advancedModelHandler::triangular<double>(3,4,5));
-    F.addInputMF("Bebida","+o-", new advancedModelHandler::triangular<double>(5,6,7));
+    F.addInputMF("Bebida","boa ", new advancedModelHandler::triangular<double>(3,4,5));
+    F.addInputMF("Bebida","+o- ", new advancedModelHandler::triangular<double>(5,6,7));
+
+    F.addOutputMF("Jogar","Fora", new advancedModelHandler::triangular<double>(5,6,7));
 
     std::string str; str << F.fuzzyfication("2;4");
     ui->textEdit->append(str.c_str());
+    str.clear();
+    F.addRules("or,Comida:salgada,Bebida:ruim,Jogar:Fora");
+    F.addRules("and,Comida:salgada,Bebida:boa,Jogar:Fora");
+    ui->textEdit->append(F.viewRules().c_str());
 //    F.addInputMF("Comida","doce", new advancedModelHandler::triangular<double>(1,2,3));
 //    std::map<std::string, advancedModelHandler::MembershipFunction<double>*> M = F.getInputMF("Comida");
 //    for(std::map<std::string,advancedModelHandler::MembershipFunction<double>*>::iterator iter = M.begin(); iter != M.end(); ++iter)

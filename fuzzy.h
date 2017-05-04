@@ -8,12 +8,26 @@
 #include <map>
 
 namespace ModelHandler {
+    struct modelString
+    {
+        std::string str;
+    public:
+        modelString(){}
+        modelString(std::string str) {this->str = str;}
+        std::string getString(){return this->str;}
+        void setString(std::string str){this->str = str;}
+    };
+
     template <typename Type>
         class Fuzzy: public Model<Type>
         {
+//            LinAlg::Matrix<modelString> InputNames;
+//            LinAlg::Matrix<advancedModelHandler::MembershipFunction<double>*> InputMF;
             std::map< std::string, std::map< std::string, advancedModelHandler::MembershipFunction<double>* > > InputMF;
-            std::map< std::string, std::map< std::string, advancedModelHandler::MembershipFunction<double>* > > outputMF;
-            std::vector< std::map<std::string, std::string> > rules;
+//            LinAlg::Matrix<modelString> OutputNames;
+//            LinAlg::Matrix<advancedModelHandler::MembershipFunction<double>*> OutputMF;
+            std::map< std::string, std::map< std::string, advancedModelHandler::MembershipFunction<double>* > > OutputMF;
+            LinAlg::Matrix<modelString> rules;
             LinAlg::Matrix<Type> fuzzyficatedValue;
 
         public:
@@ -24,9 +38,9 @@ namespace ModelHandler {
 
             std::map<std::string, advancedModelHandler::MembershipFunction<Type>*> getInputMF(std::string InputName);
 
-            void addOutputMF(unsigned nOutput,
-                            std::string MFName,
-                            const advancedModelHandler::MembershipFunction<Type>* MF);
+            void addOutputMF(std::string OutputName,
+                             std::string MFName,
+                             advancedModelHandler::MembershipFunction<Type>* MF);
 
             void removeInputMF(unsigned nInput,
                             std::string MFName,
@@ -49,6 +63,9 @@ namespace ModelHandler {
             LinAlg::Matrix<Type> rulesExecute(LinAlg::Matrix<Type> Output);
 
             void defuzzyfication();
+
+            Type maxV(Type a, Type b);
+            Type minV(Type a, Type b);
 
             Type         sim(Type x){}
             Type         sim(Type x, Type y){}
