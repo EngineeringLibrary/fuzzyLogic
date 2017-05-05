@@ -45,6 +45,7 @@ public:
     QWidget *tab_3;
     QPushButton *pushButton;
     QTextEdit *textEdit;
+    QLineEdit *lineEdit;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -111,10 +112,13 @@ public:
         tab_3->setObjectName(QStringLiteral("tab_3"));
         pushButton = new QPushButton(tab_3);
         pushButton->setObjectName(QStringLiteral("pushButton"));
-        pushButton->setGeometry(QRect(130, 160, 75, 23));
+        pushButton->setGeometry(QRect(200, 150, 75, 23));
         textEdit = new QTextEdit(tab_3);
         textEdit->setObjectName(QStringLiteral("textEdit"));
         textEdit->setGeometry(QRect(80, 50, 201, 81));
+        lineEdit = new QLineEdit(tab_3);
+        lineEdit->setObjectName(QStringLiteral("lineEdit"));
+        lineEdit->setGeometry(QRect(80, 150, 113, 20));
         tabWidget->addTab(tab_3, QString());
         MainWindow->setCentralWidget(centralWidget);
 
@@ -139,7 +143,7 @@ public:
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Tab 1", Q_NULLPTR));
         label_5->setText(QApplication::translate("MainWindow", "Gr\303\241ficos", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Tab 2", Q_NULLPTR));
-        pushButton->setText(QApplication::translate("MainWindow", "PushButton", Q_NULLPTR));
+        pushButton->setText(QApplication::translate("MainWindow", "Fuzzy", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "Page", Q_NULLPTR));
     } // retranslateUi
 

@@ -12,6 +12,7 @@ namespace advancedModelHandler {
         gaussiana(Type c, Type sigma);
         Type         sim(Type input);
         LinAlg::Matrix<Type> sim(LinAlg::Matrix<Type> input);
+        Type getAverage(){return this->c;}
     };
 }
 

@@ -27,8 +27,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    identifyVar(std::string str);
-    calTF(std::string valor);
+    void identifyVar(std::string str);
+    void calTF(std::string valor);
     PlotHandler::plot<double> *plotyG1;
     PlotHandler::plot<double> *plotyG2;
     std::vector<std::string> x;

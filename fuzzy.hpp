@@ -17,6 +17,48 @@ void ModelHandler::Fuzzy<Type>::addInputMF(std::string InputName, std::string MF
 }
 
 template <typename Type>
+LinAlg::Matrix<Type> ModelHandler::Fuzzy<Type>::membershipFunctionQuantities(std::map<std::string, std::map<std::string, advancedModelHandler::MembershipFunction<double> *> > &MF)
+{
+    std::map< std::string, std::map< std::string, advancedModelHandler::MembershipFunction<double>* > >::reverse_iterator iter = MF.rbegin();
+    unsigned n = MF.size();
+    LinAlg::Matrix<Type> ret(n,1);
+    for(unsigned i = 1; i <= n; ++i)
+    {
+        ret(i,1) = iter->second.size();
+        iter++;
+    }
+    return ret;
+}
+
+template <typename Type>
+LinAlg::Matrix<Type> ModelHandler::Fuzzy<Type>::membershipFunctionPosition(std::map<std::string, std::map<std::string, advancedModelHandler::MembershipFunction<double> *> > &MF, const std::string &firstKey, const std::string &secondKey)
+{
+    std::map< std::string, std::map< std::string, advancedModelHandler::MembershipFunction<double>* > >::reverse_iterator iterInputs = MF.rbegin();
+    unsigned n = MF.size();
+    LinAlg::Matrix<Type> ret(1,2);
+    for(unsigned i = 1; i <= n; ++i)
+    {
+        if(iterInputs->first == firstKey)
+        {
+            ret(1,1) = i;
+            std::map< std::string, advancedModelHandler::MembershipFunction<double>* >::reverse_iterator iterMF = iterInputs->second.rbegin();
+            unsigned n2 = iterInputs->second.size();
+            for(unsigned j = 1; j <= n2; ++j)
+            {
+                if(iterMF->first == secondKey)
+                {
+                    ret(1,2) = j;
+                    return ret;
+                }
+                iterMF++;
+            }
+        }
+        iterInputs++;
+    }
+    return ret;
+}
+
+template <typename Type>
 void ModelHandler::Fuzzy<Type>::addOutputMF(std::string OutputName,
                                             std::string MFName,
                                             advancedModelHandler::MembershipFunction<Type> *MF){
@@ -129,49 +171,80 @@ std::string ModelHandler::Fuzzy<Type>::viewRules()
 }
 
 template <typename Type>
-LinAlg::Matrix<Type> ModelHandler::Fuzzy<Type>::rulesExecute(LinAlg::Matrix<Type> Output)
+LinAlg::Matrix<Type> ModelHandler::Fuzzy<Type>::rulesExecute(LinAlg::Matrix<Type> fuzzyficatedValue)
 {
-    // Onde Paramos: como definir quem é saida e regra no indice de ret;
-    // verificar OR é min e AND é max?
-    // Permitir o uso de maxV e minV
-//    unsigned sizeOfRules = this->rules.size();
-//    unsigned numberOfOutputs = this->outputMF.size();
-    LinAlg::Matrix<Type> ret(this->OutputMF.size(),this->rules.getNumberOfRows()/2);
-    for(unsigned i = 1; i <= this->rules.getNumberOfRows()/2; ++i)
+    unsigned sumOfMFOutputs = 0;
+    LinAlg::Matrix<Type> outputQuantities = membershipFunctionQuantities(this->OutputMF);
+    for(unsigned i = 1; i <= outputQuantities.getNumberOfRows(); ++i)
+        sumOfMFOutputs += outputQuantities(i,1);
+
+    LinAlg::Matrix<Type> ret(sumOfMFOutputs, this->rules.getNumberOfRows()/2);
+
+    for(unsigned i = 1; i <= this->rules.getNumberOfRows(); i += 2)
     {
-        if(this->rules(1,1).getString() == "and")
-            continue;
-        else if(this->rules(1,1).getString() == "or")
-            continue;
-        // Algoritmo aqui deve ser:
-        // ret deve receber o valor correspondente a qual entrada estiver na string e/ou a outra entrada
-        // saber qual entrada e saida está na regra
-        // realizar as operações e ou ou
-        // atribuir a ret na sequência: às saídas que as regras afetam;
+        Type tempMFValue;
+        for(unsigned j = 2; j <= rules.getNumberOfColumns(); ++j)
+        {
+            LinAlg::Matrix<Type> inputPosition = this->membershipFunctionPosition(this->InputMF,this->rules(i,j).getString(),this->rules(i+1,j).getString());
+            if(!LinAlg::isEqual(inputPosition,LinAlg::Matrix<Type>("0,0")))
+            {
+                if(j == 2)
+                    tempMFValue = fuzzyficatedValue(inputPosition(1,1),inputPosition(1,2));
+                else if(this->rules(i,1).getString() == "and")
+                    tempMFValue = this->minV(tempMFValue,fuzzyficatedValue(inputPosition(1,1),inputPosition(1,2)));
+                else if(this->rules(i,1).getString() == "or")
+                    tempMFValue = this->maxV(tempMFValue,fuzzyficatedValue(inputPosition(1,1),inputPosition(1,2)));
+
+                continue;
+            }
+
+            LinAlg::Matrix<Type> outputPosition = this->membershipFunctionPosition(this->OutputMF,this->rules(i,j).getString(),this->rules(i+1,j).getString());
+            if(!LinAlg::isEqual(outputPosition,LinAlg::Matrix<Type>("0,0")))
+            {
+                sumOfMFOutputs = 0;
+                for(unsigned k = 2; k <= outputPosition(1,1); ++k)
+                    sumOfMFOutputs += outputQuantities(k-1,1);
+                ret(outputPosition(1,2) + sumOfMFOutputs,(i+1)/2) = tempMFValue;
+            }
+        }
     }
-//    std::map<std::string, std::string>::reverse_iterator iter = this->rules[i].rbegin();
-//    if(iter->first == "and")
-//    {
-//        iter++;
-//        for(unsigned i = 1; i < sizeOfRules; i += 2)
-//        {
-//            std::map<std::string, std::string>::reverse_iterator iter = this->rules[i].rbegin();
-//            for esse for é para iterar as entradas na regra
-//            ret(saida,regra) = maxV(ret(saida,regra),this->InputMF[iter->first][iter->second].sim(Output));
-//            iter++;
-//        }
-//    }
-//    else if(iter->first == "or")
-//    {
-//        iter++;
-//        for(unsigned i = 1; i < sizeOfRules; i += 2)
-//        {
-//            std::map<std::string, std::string>::reverse_iterator iter = this->rules[i].rbegin();
-//            //            for esse for é para iterar as entradas na regra
-//            ret(saida,regra) = minV(ret(saida,regra),this->InputMF[iter->first][iter->second].sim(Output));
-//            iter++;
-//        }
-//    }
+    return ret;
+}
+
+template <typename Type>
+LinAlg::Matrix<Type> ModelHandler::Fuzzy<Type>::defuzzyfication(LinAlg::Matrix<Type> rulesMatrix)
+{
+    LinAlg::Matrix<Type> outputQuantities = membershipFunctionQuantities(this->OutputMF);
+    LinAlg::Matrix<double> ret(outputQuantities.getNumberOfRows(),1);
+    std::map< std::string, std::map< std::string, advancedModelHandler::MembershipFunction<double>* > >::reverse_iterator iterOutputs = this->OutputMF.rbegin();
+    unsigned counter = 1;
+    for(unsigned i = 1; i <= outputQuantities.getNumberOfRows(); ++i)
+    {
+        std::map< std::string, advancedModelHandler::MembershipFunction<double>* >::reverse_iterator iter = iterOutputs->second.rbegin();
+        unsigned n2 = iterOutputs->second.size();
+        Type den = 0, num = 0;
+        for(unsigned j = 1; j <= n2; ++j)
+        {
+            for(unsigned k = 1; k <= rulesMatrix.getNumberOfColumns(); ++k)
+            {
+                num += rulesMatrix(counter,k)*iter->second->getAverage();
+                den += rulesMatrix(counter,k);
+            }
+            counter++;
+            iter++;
+        }
+        if(den != 0)
+            ret(i,1) = num/den;
+        iterOutputs++;
+    }
+    return ret;
+}
+
+template <typename Type>
+LinAlg::Matrix<Type> ModelHandler::Fuzzy<Type>::sim(LinAlg::Matrix<Type> x)
+{
+    this->fuzzyficatedValue = this->fuzzyfication(x);
+    return this->defuzzyfication(this->rulesExecute(this->fuzzyficatedValue));
 }
 
 template <typename Type>
@@ -191,3 +264,4 @@ Type ModelHandler::Fuzzy<Type>::minV(Type a, Type b)
     else
         return a;
 }
+

@@ -11,6 +11,7 @@ namespace advancedModelHandler {
         trapezoidal(Type leftLimit, Type rigthLimit, Type peak1, Type peak2);
         Type         sim(Type x);
         LinAlg::Matrix<Type> sim(LinAlg::Matrix<Type> x);
+        Type getAverage(){ return (this->peak1 + this->peak2)/2; }
     };
 }
 

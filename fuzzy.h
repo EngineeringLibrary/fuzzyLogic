@@ -13,6 +13,7 @@ namespace ModelHandler {
         std::string str;
     public:
         modelString(){}
+        ~modelString(){str.clear();}
         modelString(std::string str) {this->str = str;}
         std::string getString(){return this->str;}
         void setString(std::string str){this->str = str;}
@@ -56,20 +57,23 @@ namespace ModelHandler {
 
             void removeRules();
 
+            LinAlg::Matrix<Type> membershipFunctionPosition (std::map<std::string, std::map<std::string, advancedModelHandler::MembershipFunction<double> *> > &MF, const std::string &firstKey, const std::string &secondKey);
+            LinAlg::Matrix<Type> membershipFunctionQuantities(std::map<std::string, std::map<std::string, advancedModelHandler::MembershipFunction<double> *> > &MF);
+
             unsigned getMaxNumberOfMembershipFunctions(std::map<std::__cxx11::string, std::map<std::__cxx11::string, advancedModelHandler::MembershipFunction<double> *> > &Input);
 
             LinAlg::Matrix<Type> fuzzyfication( LinAlg::Matrix<Type> Input);
 
-            LinAlg::Matrix<Type> rulesExecute(LinAlg::Matrix<Type> Output);
+            LinAlg::Matrix<Type> rulesExecute(LinAlg::Matrix<Type> fuzzyficatedValue);
 
-            void defuzzyfication();
+            LinAlg::Matrix<Type> defuzzyfication(LinAlg::Matrix<Type> rulesMatrix);
 
             Type maxV(Type a, Type b);
             Type minV(Type a, Type b);
 
             Type         sim(Type x){}
             Type         sim(Type x, Type y){}
-            LinAlg::Matrix<Type> sim(LinAlg::Matrix<Type> x){}
+            LinAlg::Matrix<Type> sim(LinAlg::Matrix<Type> x);
             LinAlg::Matrix<Type> sim(Type lmin, Type lmax, Type step){}
             LinAlg::Matrix<Type> sim(LinAlg::Matrix<Type> x, LinAlg::Matrix<Type> y){}
 

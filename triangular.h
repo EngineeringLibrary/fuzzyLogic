@@ -11,6 +11,7 @@ namespace advancedModelHandler {
         triangular(Type leftLimit, Type peak, Type rigthLimit);
         Type         sim(Type x);
         LinAlg::Matrix<Type> sim(LinAlg::Matrix<Type> x);
+        Type getAverage(){ return this->peak; }
     };
 }
 

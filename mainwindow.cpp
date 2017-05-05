@@ -18,7 +18,7 @@ void MainWindow::on_simularButton_clicked()
     identifyVar(ui->lineEquacao->text().toStdString());
 }
 
-MainWindow::calTF(std::string valor){
+void MainWindow::calTF(std::string valor){
 
     std::string pol = valor;
     std::string num = pol.substr(0,pol.find('/'));
@@ -36,7 +36,7 @@ MainWindow::calTF(std::string valor){
     plotyG2 = new PlotHandler::plot<double> (Y, ui->widget_2);
 }
 
-MainWindow::identifyVar(std::string str)
+void MainWindow::identifyVar(std::string str)
 {
     std::size_t pos = str.find('=');
     std::string var = str.substr(0,pos);
@@ -63,22 +63,17 @@ void MainWindow::on_pushButton_clicked()
     F.addInputMF("Bebida","+o- ", new advancedModelHandler::triangular<double>(5,6,7));
 
     F.addOutputMF("Jogar","Fora", new advancedModelHandler::triangular<double>(5,6,7));
+    F.addOutputMF("Jogar","Dentro", new advancedModelHandler::triangular<double>(3,4,5));
 
-    std::string str; str << F.fuzzyfication("2;4");
-    ui->textEdit->append(str.c_str());
-    str.clear();
     F.addRules("or,Comida:salgada,Bebida:ruim,Jogar:Fora");
-    F.addRules("and,Comida:salgada,Bebida:boa,Jogar:Fora");
-    ui->textEdit->append(F.viewRules().c_str());
-//    F.addInputMF("Comida","doce", new advancedModelHandler::triangular<double>(1,2,3));
-//    std::map<std::string, advancedModelHandler::MembershipFunction<double>*> M = F.getInputMF("Comida");
-//    for(std::map<std::string,advancedModelHandler::MembershipFunction<double>*>::iterator iter = M.begin(); iter != M.end(); ++iter)
-//    {
-//    std::string k = iter->first;
-////    advancedModelHandler::MembershipFunction y =  iter->second;
-//    ui->textEdit->append(k.c_str());
-//    }
+    F.addRules("or,Comida:salgada,Bebida:boa,Jogar:Dentro");
 
+    std::string str; str << F.sim(ui->lineEdit->text().toStdString().c_str());
+    ui->textEdit->append(str.c_str());
 
-
+//    std::cout << F.fuzzyfication("1.5;1.5") << std::endl;
+//    LinAlg::Matrix<double> rules = F.rulesExecute();
+//    std::cout << rules << std::endl;
+//    std::cout << F.defuzzyfication(rules) << std::endl;
+//    ui->textEdit->append(F.viewRules().c_str());
 }

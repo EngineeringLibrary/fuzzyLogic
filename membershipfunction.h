@@ -10,6 +10,7 @@ namespace advancedModelHandler {
         MembershipFunction(){}
         virtual Type         sim(Type x) = 0;
         virtual LinAlg::Matrix<Type> sim(LinAlg::Matrix<Type> x) = 0;
+        virtual Type getAverage() = 0;
 
     protected:
         Type maxV(Type a, Type b)
